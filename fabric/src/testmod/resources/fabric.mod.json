@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "amalgamation-testmod",
+  "name": "Amalgamation Test Mod",
+  "version": "1.0.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "org.mythic_goose.amalgamation.testmod.AmalgamationTestMod"
+    ]
+  },
+  "depends": {
+    "amalgamation": "*",
+    "fabricloader": ">=0.15.0",
+    "minecraft": "*"
+  }
+}

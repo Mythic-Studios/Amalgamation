@@ -1,0 +1,35 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contact": {
+        "homepage": "https://mythic-studios.github.io/"
+    },
+    "license": "${license}",
+    "icon": "amalgamation.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "org.mythic_goose.amalgamation.Amalgamation"
+        ]
+    },
+    "mixins": [
+        "amalgamation.mixins.json",
+        "amalgamation.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${fabric_loader_version}",
+        "fabric-api": "*",
+        "minecraft": "~${minecraft_version}",
+        "java": ">=${java_version}"
+    },
+    "suggests": {
+        "another-mod": "*"
+    }
+}
+  
