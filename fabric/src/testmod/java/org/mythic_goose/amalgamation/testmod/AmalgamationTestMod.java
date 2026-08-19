@@ -1,7 +1,7 @@
 package org.mythic_goose.amalgamation.testmod;
 
 import net.fabricmc.api.ModInitializer;
-import org.mythic_goose.amalgamation.library.registry_v1.ModRegistry;
+import org.mythic_goose.amalgamation.library.registry_v1.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ public class AmalgamationTestMod implements ModInitializer {
     public void onInitialize() {
         LOG.info("Initializing Amalgamation testmod");
 
-        ModRegistry.MOD_ID = MOD_ID;
+        DeferredRegister.setModId(MOD_ID);
 
         TestBlocks.registerTestBlocks();
         TestItems.registerTestItems();

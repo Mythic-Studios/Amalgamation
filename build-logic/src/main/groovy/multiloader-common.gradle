@@ -69,15 +69,14 @@ processResources {
 }
 
 publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifactId base.archivesName.get()
-            from components.java
-        }
-    }
     repositories {
         maven {
-            url System.getenv('local_maven_url')
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Mythic-Studios/Amalgamation")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }

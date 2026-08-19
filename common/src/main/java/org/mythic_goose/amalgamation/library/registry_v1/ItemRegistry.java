@@ -38,6 +38,8 @@ import java.util.function.Function;
  */
 public abstract class ItemRegistry {
 
+    private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM);
+
     /**
      * Registers a custom item.
      *
@@ -46,11 +48,8 @@ public abstract class ItemRegistry {
      * @return the registered item entry
      */
     protected static RegistryEntry<Item> registerItem(String path, Function<Item.Properties, Item> factory) {
-        ResourceKey<Item> key = ResourceKey.create(BuiltInRegistries.ITEM.key(), ModRegistry.id(path));
-        return ModRegistry.register(
-                BuiltInRegistries.ITEM, path,
-                () -> factory.apply(new Item.Properties().setId(key))
-        );
+        ResourceKey<Item> key = ResourceKey.create(BuiltInRegistries.ITEM.key(), DeferredRegister.id(path));
+        return ITEMS.register(path, () -> factory.apply(new Item.Properties().setId(key)));
     }
 
     /**
@@ -64,8 +63,8 @@ public abstract class ItemRegistry {
      * @return the registered BlockItem entry
      */
     protected static RegistryEntry<BlockItem> registerBlockItem(String path, RegistryEntry<Block> block) {
-        ResourceKey<Item> key = ResourceKey.create(BuiltInRegistries.ITEM.key(), ModRegistry.id(path));
-        return ModRegistry.register(BuiltInRegistries.ITEM, path, () -> {
+        ResourceKey<Item> key = ResourceKey.create(BuiltInRegistries.ITEM.key(), DeferredRegister.id(path));
+        return ITEMS.register(path, () -> {
             BlockItem item = new BlockItem(block.get(), new Item.Properties()
                     .setId(key)
                     .useBlockDescriptionPrefix());
@@ -76,8 +75,8 @@ public abstract class ItemRegistry {
 
     /** Like {@link #registerBlockItem(String, RegistryEntry)}, with a custom max stack size. */
     protected static RegistryEntry<BlockItem> registerBlockItemWithCustomStackSize(String path, RegistryEntry<Block> block, int stackSize) {
-        ResourceKey<Item> key = ResourceKey.create(BuiltInRegistries.ITEM.key(), ModRegistry.id(path));
-        return ModRegistry.register(BuiltInRegistries.ITEM, path, () -> {
+        ResourceKey<Item> key = ResourceKey.create(BuiltInRegistries.ITEM.key(), DeferredRegister.id(path));
+        return ITEMS.register(path, () -> {
             BlockItem item = new BlockItem(block.get(), new Item.Properties()
                     .setId(key)
                     .useBlockDescriptionPrefix()

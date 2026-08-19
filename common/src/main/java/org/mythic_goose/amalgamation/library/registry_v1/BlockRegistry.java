@@ -5,8 +5,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -44,7 +42,7 @@ import java.util.function.Function;
  */
 public abstract class BlockRegistry {
 
-    private static final List<RegistryEntry<Block>> REGISTERED = new ArrayList<>();
+    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK);
 
     /**
      * Registers a block and tracks it internally.
@@ -54,13 +52,8 @@ public abstract class BlockRegistry {
      * @return the registered block entry
      */
     protected static RegistryEntry<Block> registerBlock(String path, Function<BlockBehaviour.Properties, Block> factory) {
-        ResourceKey<Block> key = ResourceKey.create(BuiltInRegistries.BLOCK.key(), ModRegistry.id(path));
-        RegistryEntry<Block> entry = ModRegistry.register(
-                BuiltInRegistries.BLOCK, path,
-                () -> factory.apply(BlockBehaviour.Properties.of().setId(key))
-        );
-        REGISTERED.add(entry);
-        return entry;
+        ResourceKey<Block> key = ResourceKey.create(BuiltInRegistries.BLOCK.key(), DeferredRegister.id(path));
+        return BLOCKS.register(path, () -> factory.apply(BlockBehaviour.Properties.of().setId(key)));
     }
 
     /**
@@ -69,7 +62,7 @@ public abstract class BlockRegistry {
      * your loader's registration phase has actually run.
      */
     public static List<RegistryEntry<Block>> all() {
-        return Collections.unmodifiableList(REGISTERED);
+        return BLOCKS.all();
     }
 
     /**

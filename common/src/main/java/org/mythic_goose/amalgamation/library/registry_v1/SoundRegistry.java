@@ -7,6 +7,8 @@ import net.minecraft.sounds.SoundEvent;
 /** Registry helper for sound events. Works identically on Fabric and NeoForge. */
 public abstract class SoundRegistry {
 
+    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT);
+
     /**
      * Registers the underlying {@link SoundEvent} for a jukebox song. Note this only
      * registers the sound - the jukebox song itself (length, output, comparator output)
@@ -18,7 +20,7 @@ public abstract class SoundRegistry {
     }
 
     protected static RegistryEntry<SoundEvent> registerSoundEvent(String name) {
-        Identifier id = ModRegistry.id(name);
-        return ModRegistry.register(BuiltInRegistries.SOUND_EVENT, name, () -> SoundEvent.createVariableRangeEvent(id));
+        Identifier id = DeferredRegister.id(name);
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(id));
     }
 }
