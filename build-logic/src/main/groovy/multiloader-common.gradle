@@ -69,7 +69,16 @@ processResources {
 }
 
 publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+        }
+    }
     repositories {
+        maven {
+            url System.getenv('local_maven_url')
+        }
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/Mythic-Studios/Amalgamation")
