@@ -70,21 +70,23 @@ processResources {
 
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
-            artifactId base.archivesName.get()
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = base.archivesName.get()
+            version = project.version
+
             from components.java
         }
     }
     repositories {
         maven {
-            url System.getenv('local_maven_url')
-        }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Mythic-Studios/Amalgamation")
+            name = "mythic_goose"
+            def releasesRepoUrl = "https://maven.cloudsmith.io/mythic_goose/amalgamtion/"
+            def snapshotsRepoUrl = "https://maven.cloudsmith.io/mythic_goose/amalgamtion/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+                username = "token"
+                password = project.findProperty("cls.key")
             }
         }
     }

@@ -3,7 +3,7 @@ package org.mythic_goose.amalgamation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Constants {
+public class AmalgamationConstants {
 
     public static final String MOD_ID = "amalgamation";
     public static final String MOD_NAME = "Amalgamation";

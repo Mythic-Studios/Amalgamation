@@ -1,6 +1,6 @@
 package org.mythic_goose.amalgamation.mixin;
 
-import org.mythic_goose.amalgamation.Constants;
+import org.mythic_goose.amalgamation.AmalgamationConstants;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,6 +14,6 @@ public class MixinTitleScreen {
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
 
-        Constants.LOG.info("MC Version: {}", SharedConstants.getCurrentVersion().name());
+        AmalgamationConstants.LOG.info("MC Version: {}", SharedConstants.getCurrentVersion().name());
     }
 }

@@ -1,6 +1,6 @@
 package org.mythic_goose.amalgamation.platform;
 
-import org.mythic_goose.amalgamation.Constants;
+import org.mythic_goose.amalgamation.AmalgamationConstants;
 import org.mythic_goose.amalgamation.platform.services.IPlatformHelper;
 
 import java.util.ServiceLoader;
@@ -24,7 +24,7 @@ public class Services {
         final T loadedService = ServiceLoader.load(clazz, Services.class.getClassLoader())
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException("Failed to load service for " + clazz.getName()));
-        Constants.LOG.debug("Loaded {} for service {}", loadedService, clazz);
+        AmalgamationConstants.LOG.debug("Loaded {} for service {}", loadedService, clazz);
         return loadedService;
     }
 }
