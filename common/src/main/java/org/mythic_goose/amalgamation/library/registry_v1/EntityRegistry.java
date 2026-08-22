@@ -1,6 +1,5 @@
 package org.mythic_goose.amalgamation.library.registry_v1;
 
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
@@ -16,15 +15,13 @@ public abstract class EntityRegistry {
 
     @SuppressWarnings("unchecked")
     protected static <T extends Entity> RegistryEntry<EntityType<T>> registerEntity(
-            String path, Function<ResourceKey<EntityType<T>>, EntityType<T>> factory) {
+            String path, Function<ResourceKey<EntityType<?>>, EntityType<T>> factory) {
 
-        ResourceKey<Registry<EntityType<T>>> registryKey =
-                (ResourceKey<Registry<EntityType<T>>>) (ResourceKey<?>) BuiltInRegistries.ENTITY_TYPE.key();
-
-        ResourceKey<EntityType<T>> key = ResourceKey.create(registryKey, DeferredRegister.id(path));
+        ResourceKey<EntityType<?>> key =
+                ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), DeferredRegister.id(path));
 
         return (RegistryEntry<EntityType<T>>) (RegistryEntry<?>)
-                ENTITIES.register(path, (java.util.function.Supplier<EntityType<?>>) () -> factory.apply(key));
+                ENTITIES.register(path, () -> factory.apply(key));
     }
 
     public static List<RegistryEntry<EntityType<?>>> all() {
