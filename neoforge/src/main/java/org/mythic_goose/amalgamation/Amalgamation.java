@@ -15,7 +15,7 @@ public class Amalgamation {
         // to load your mod. You can access NeoForge and Common code in this
         // project.
         NeoForgePlatformHelper.init(eventBus);
-        NeoForgeAttachmentPlatform.init(eventBus);
+        NeoForgeAttachmentPlatform.init(AmalgamationConstants.MOD_ID,eventBus);
         NeoForgeAttachmentHelper.init(AmalgamationConstants.MOD_ID, eventBus);
 
         // Use NeoForge to bootstrap the Common mod.

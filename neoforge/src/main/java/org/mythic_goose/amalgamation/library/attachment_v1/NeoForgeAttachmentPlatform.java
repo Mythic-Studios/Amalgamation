@@ -13,12 +13,13 @@ public final class NeoForgeAttachmentPlatform implements AttachmentPlatform {
 
     private static DeferredRegister<AttachmentType<?>> registry;
 
-    public NeoForgeAttachmentPlatform(String modId) {
+    public static void init(String modId, IEventBus modBus) {
         registry = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, modId);
+        registry.register(modBus);
     }
 
-    public static void init(IEventBus modBus) {
-        registry.register(modBus);
+    public NeoForgeAttachmentPlatform(String modId) {
+        registry = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, modId);
     }
 
     @Override
