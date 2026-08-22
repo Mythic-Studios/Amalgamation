@@ -5,4 +5,4 @@ accessible method net/minecraft/client/data/models/ItemModelGenerators generateL
 accessible method net/minecraft/client/data/models/ItemModelGenerators generateLayeredItem (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/resources/model/sprite/Material;Lnet/minecraft/client/resources/model/sprite/Material;Lnet/minecraft/client/resources/model/sprite/Material;)V
 accessible field net/minecraft/client/data/models/ItemModelGenerators modelOutput Ljava/util/function/BiConsumer;
 accessible method net/minecraft/client/data/models/BlockModelGenerators createTrivialBlock (Lnet/minecraft/world/level/block/Block;Lnet/minecraft/client/data/models/model/TexturedModel$Provider;)V
-accessible method net/minecraft/world/item/equipment/ArmorMaterials makeDefense (IIIII)Lnet/minecraft/world/item/equipment/ArmorMaterial;
+accessible method net/minecraft/world/item/equipment/ArmorMaterials makeDefense	(IIIII)Ljava/util/Map;
