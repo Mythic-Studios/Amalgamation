@@ -42,7 +42,7 @@ import java.util.function.Function;
  */
 public abstract class BlockRegistry {
 
-    private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK);
 
     /**
      * Registers a block and tracks it internally.

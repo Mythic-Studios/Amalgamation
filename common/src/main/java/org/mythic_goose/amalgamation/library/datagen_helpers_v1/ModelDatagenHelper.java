@@ -41,7 +41,7 @@ public class ModelDatagenHelper {
      * <p>
      * This is a custom method and there is no vanilla alternative
      */
-    public final void generate3DItem(@NonNull ItemModelGenerators itemModelGenerators, final Item item) {
+    public static void generate3DItem(@NonNull ItemModelGenerators itemModelGenerators, final Item item) {
         ItemModel.Unbaked flatModel = ItemModelUtils.plainModel(itemModelGenerators.createFlatItemModel(item, ModelTemplates.FLAT_ITEM));
 
         Identifier inHandLocation = ModelLocationUtils.getModelLocation(item, "_in_hand");
@@ -58,7 +58,7 @@ public class ModelDatagenHelper {
      * <p>
      * This generates the model as a flat item (e.g. Diamond, Emerald, Iron Ingot, ect.)
      */
-    public final void simpleItem(@NonNull ItemModelGenerators itemModelGenerators, final Item item) {
+    public static void simpleItem(@NonNull ItemModelGenerators itemModelGenerators, final Item item) {
         itemModelGenerators.createFlatItemModel(item, ModelTemplates.FLAT_ITEM);
     }
 
@@ -70,7 +70,7 @@ public class ModelDatagenHelper {
      * <p>
      * This generates the model as an item you hold in your hand (e.g. Pickaxes, Axes and Swords)
      */
-    public final void holdingItem(@NonNull ItemModelGenerators itemModelGenerators, final Item item) {
+    public static void holdingItem(@NonNull ItemModelGenerators itemModelGenerators, final Item item) {
         itemModelGenerators.createFlatItemModel(item, ModelTemplates.FLAT_HANDHELD_ITEM);
     }
 
@@ -80,7 +80,7 @@ public class ModelDatagenHelper {
      * @param equipmentAssetId The Material Key registered
      * @param hasDyedLayer Used for like Leather armor - (Not really needed)
      */
-    public final void trimmableHelmet(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
+    public static void trimmableHelmet(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
         Identifier modelLocation = ModelLocationUtils.getModelLocation(armor);
         Material itemTexture = TextureMapping.getItemTexture(armor);
         Material overlayTexture = TextureMapping.getItemTexture(armor, "_overlay");
@@ -120,7 +120,7 @@ public class ModelDatagenHelper {
      * @param equipmentAssetId The Material Key registered
      * @param hasDyedLayer Used for like Leather armor - (Not really needed)
      */
-    public final void trimmableChestplate(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
+    public static void trimmableChestplate(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
         Identifier modelLocation = ModelLocationUtils.getModelLocation(armor);
         Material itemTexture = TextureMapping.getItemTexture(armor);
         Material overlayTexture = TextureMapping.getItemTexture(armor, "_overlay");
@@ -160,7 +160,7 @@ public class ModelDatagenHelper {
      * @param equipmentAssetId The Material Key registered
      * @param hasDyedLayer Used for like Leather armor - (Not really needed)
      */
-    public final void trimmableLeggings(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
+    public static void trimmableLeggings(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
         Identifier modelLocation = ModelLocationUtils.getModelLocation(armor);
         Material itemTexture = TextureMapping.getItemTexture(armor);
         Material overlayTexture = TextureMapping.getItemTexture(armor, "_overlay");
@@ -200,7 +200,7 @@ public class ModelDatagenHelper {
      * @param equipmentAssetId The Material Key registered
      * @param hasDyedLayer Used for like Leather armor - (Not really needed)
      */
-    public final void trimmableBoots(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
+    public static void trimmableBoots(@NonNull ItemModelGenerators itemModelGenerators, final Item armor, final ResourceKey<EquipmentAsset> equipmentAssetId, final boolean hasDyedLayer) {
         Identifier modelLocation = ModelLocationUtils.getModelLocation(armor);
         Material itemTexture = TextureMapping.getItemTexture(armor);
         Material overlayTexture = TextureMapping.getItemTexture(armor, "_overlay");
@@ -238,7 +238,7 @@ public class ModelDatagenHelper {
      * @param blockModelGenerators Input the datagen provider to use it (Will not work without it)
      * @param block The Block you wish to use
      */
-    public final void sameSidesBlock(@NonNull BlockModelGenerators blockModelGenerators, final Block block) {
+    public static void sameSidesBlock(@NonNull BlockModelGenerators blockModelGenerators, final Block block) {
         blockModelGenerators.createTrivialBlock(block, TexturedModel.CUBE);
     }
 }
