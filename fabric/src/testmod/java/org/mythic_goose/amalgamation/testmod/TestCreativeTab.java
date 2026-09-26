@@ -5,32 +5,32 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Items;
+import org.mythic_goose.amalgamation.library.creative_tab_v1.CreativeTabRegistrar;
 import org.mythic_goose.amalgamation.library.creative_tab_v1.SectionStyle;
 import org.mythic_goose.amalgamation.library.creative_tab_v1.SectionTabBuilder;
 
+import java.util.function.Supplier;
+
 public class TestCreativeTab {
 
-    public static CreativeModeTab TEST_TAB;
 
-    /** Call once from the testmod's entrypoint, after TestBlocks/TestItems are registered. */
-    public static void registerTestTab() {
+    public static Supplier<CreativeModeTab> TEST_TAB;
+
+    public static void init(CreativeTabRegistrar registrar) {
+        TEST_TAB = registrar.register("bw_tab", TestCreativeTab::buildTab);
+    }
+
+    private static CreativeModeTab buildTab() {
         SectionTabBuilder builder = SectionTabBuilder.create(
                         Identifier.fromNamespaceAndPath(AmalgamationTestMod.MOD_ID, "test_tab"))
-                .icon(TestItems.TEST_RUBY.get())
-                .title(Component.literal("Amalgamation Test"))
-                .displaySection("colored_section", SectionStyle.colored(0xFF97119f), output -> {
+                .icon(Items.SNOWBALL)
+                .title(Component.translatable("itemGroup.bw_tab"))
+                .displaySection("current", SectionStyle.none(), output -> {
+                    output.add(TestItems.TEST_RUBY.get());
                     output.add(TestBlocks.TEST_ORE.get());
-                    output.add(TestItems.TEST_ORE_ITEM.get());
-                })
-                .displaySection("textured_section", SectionStyle.textured(), output -> {
-                    output.add(TestItems.TEST_RUBY.get());
-                })
-                .displaySection("empty", SectionStyle.none(), output -> {
-                    output.add(TestItems.TEST_RUBY.get());
-                })
-                ;
+                });
 
-
-        TEST_TAB = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, builder.id(), builder.build());
+        return builder.build();
     }
 }
