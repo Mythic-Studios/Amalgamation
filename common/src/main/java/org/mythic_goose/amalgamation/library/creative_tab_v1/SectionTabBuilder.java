@@ -22,6 +22,9 @@ import java.util.function.Consumer;
  *         Identifier.fromNamespaceAndPath(Constants.MOD_ID, "amalgamation_tab")) // auto-placed
  *     .icon(AmalgamationItems.RUBY_CRYSTAL)
  *     .title(Component.translatable("itemGroup.amalgamation_tab"))
+ *     .emptySection(output -> {
+ *         output.add(AmalgamationItems.RUBY_NUGGET);
+ *     })
  *     .displaySection("crystals", SectionStyle.colored(0xFF97119f), output -> {
  *         output.add(AmalgamationItems.RUBY_DUST);
  *         output.add(AmalgamationItems.RUBY_CRYSTAL);
@@ -52,6 +55,7 @@ public class SectionTabBuilder {
     private final String modId;
     private final CreativeModeTab.Builder delegate;
     private final List<Section> sections = new ArrayList<>();
+    private List<Item> emptySectionItems;
 
     private SectionTabBuilder(Identifier id, CreativeModeTab.Row row, int column) {
         this.id = id;
@@ -112,6 +116,24 @@ public class SectionTabBuilder {
     }
 
     /**
+     * Adds a header-less block of items pinned to the very top of the tab, exactly like
+     * vanilla's own creative inventory. Always placed first regardless of call order
+     * relative to {@link #displaySection}. Can be called at most once per tab.
+     *
+     * @throws IllegalStateException if called more than once on the same builder
+     */
+    public SectionTabBuilder emptySection(Consumer<SectionOutput> output) {
+        if (emptySectionItems != null) {
+            throw new IllegalStateException("emptySection() can only be called once per tab");
+        }
+        List<Item> collected = new ArrayList<>();
+        SectionOutput sink = item -> collected.add(item.asItem());
+        output.accept(sink);
+        emptySectionItems = collected;
+        return this;
+    }
+
+    /**
      * Adds a section to this tab.
      *
      * @param sectionId unique id within this tab. Also used to derive the section's default
@@ -136,11 +158,15 @@ public class SectionTabBuilder {
      * loader expects (see the class doc above).
      */
     public CreativeModeTab build() {
-        // Real contents are filled in lazily by CreativeModeTabMixin#buildContents,
-        // once this tab has a registered TabLayout (set below) - the vanilla builder's
-        // default (no-op) displayItemsGenerator is never actually invoked for our tabs.
+        List<Section> ordered = sections;
+        if (emptySectionItems != null) {
+            ordered = new ArrayList<>(sections.size() + 1);
+            ordered.add(SectionStyle.none().build(modId, "empty", Component.empty(), emptySectionItems));
+            ordered.addAll(sections);
+        }
+
         CreativeModeTab tab = delegate.build();
-        TabLayout.register(tab, sections);
+        TabLayout.register(tab, ordered);
         return tab;
     }
 }

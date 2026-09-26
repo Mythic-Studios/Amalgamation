@@ -36,4 +36,12 @@ public interface SectionStyle {
         return (modId, sectionId, title, items) ->
                 SectionTextured.of(modId, sectionId, title, textColor, items);
     }
+
+    /**
+     * No banner at all - items sit flush with no header row. Used internally by
+     * {@link SectionTabBuilder#emptySection}; title and text color are ignored.
+     */
+    static SectionStyle none() {
+        return (modId, sectionId, title, items) -> new SectionNone(sectionId, items);
+    }
 }

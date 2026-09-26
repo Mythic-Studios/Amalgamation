@@ -20,12 +20,16 @@ public class TestCreativeTab {
                 .title(Component.literal("Amalgamation Test"))
                 .displaySection("colored_section", SectionStyle.colored(0xFF97119f), output -> {
                     output.add(TestBlocks.TEST_ORE.get());
-                    output.add(TestItems.TEST_RUBY.get());
                     output.add(TestItems.TEST_ORE_ITEM.get());
                 })
                 .displaySection("textured_section", SectionStyle.textured(), output -> {
                     output.add(TestItems.TEST_RUBY.get());
-                });
+                })
+                .displaySection("empty", SectionStyle.none(), output -> {
+                    output.add(TestItems.TEST_RUBY.get());
+                })
+                ;
+
 
         TEST_TAB = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, builder.id(), builder.build());
     }

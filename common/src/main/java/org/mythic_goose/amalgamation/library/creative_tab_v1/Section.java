@@ -10,4 +10,13 @@ public interface Section {
     Component title();
     int textColor();
     List<Item> items();
+
+    /**
+     * Whether this section gets a banner row (blank spacer + title/texture) in the grid.
+     * {@code false} for header-less sections like {@link SectionNone}, which sit flush
+     * with no reserved row and are skipped entirely by {@link BannerRenderer}.
+     */
+    default boolean hasHeader() {
+        return true;
+    }
 }

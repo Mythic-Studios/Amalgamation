@@ -57,11 +57,13 @@ public class TabLayout {
         int row = 0;
 
         for (Section section : sections) {
-            sectionRow.put(section.id(), row);
-            for (int i = 0; i < 9; i++) {
-                result.add(ItemStack.EMPTY);
+            if (section.hasHeader()) {
+                sectionRow.put(section.id(), row);
+                for (int i = 0; i < 9; i++) {
+                    result.add(ItemStack.EMPTY);
+                }
+                row++;
             }
-            row++;
 
             List<ItemStack> stacks = section.items().stream()
                     .map(ItemStack::new)

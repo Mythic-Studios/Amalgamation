@@ -20,19 +20,10 @@ import java.util.function.Supplier;
  * use the static {@link #id(String)} to build a correctly-namespaced id without needing
  * an instance.
  *
- * <h2>Quick start</h2>
- * <pre>{@code
- * public abstract class AmalgamationBlocks {
- *     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK);
- *
- *     public static final RegistryEntry<Block> RUBY_ORE =
- *             BLOCKS.register("ruby_ore", () -> new Block(BlockBehaviour.Properties.of()));
- * }
- * }</pre>
  *
  * <h2>Setting the mod id</h2>
  * <p>Once, from your loader's main entrypoint, before any registry class is touched:
- * <pre>{@code DeferredRegister.setModId(Constants.MOD_ID); }</pre>
+ * <pre>{@code DeferredRegister.setModId(YourMod.MOD_ID); }</pre>
  */
 public final class DeferredRegister<T> {
 
