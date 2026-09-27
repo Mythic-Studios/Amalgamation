@@ -8,6 +8,7 @@
     "accessor.CreativeModeTabAccessor"
   ],
   "client": [
+    "ClientTooltipComponentMixin",
     "CreativeModeInventoryScreenMixin",
     "MixinMinecraft",
     "accessor.CreativeModeInventoryScreenAccessor",

@@ -1,5 +1,6 @@
 package org.mythic_goose.amalgamation.platform;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -65,6 +66,7 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
         return new RegistryEntry<T>() {
             @Override public T get() { return holder.get(); }
             @Override public Identifier id() { return id; }
+            @Override public Holder<T> asHolder() { return holder; }
         };
     }
 }
