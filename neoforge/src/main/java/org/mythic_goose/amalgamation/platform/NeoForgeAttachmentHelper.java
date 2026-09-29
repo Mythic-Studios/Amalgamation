@@ -6,8 +6,8 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.mythic_goose.amalgamation.library.attachment_v1.AttachmentSpec;
-import org.mythic_goose.amalgamation.library.attachment_v1.CommonAttachment;
+import org.mythic_goose.amalgamation.api.attachment_v1.AttachmentSpec;
+import org.mythic_goose.amalgamation.api.attachment_v1.CommonAttachment;
 import org.mythic_goose.amalgamation.platform.services.IAttachmentHelper;
 
 import java.util.concurrent.ConcurrentHashMap;

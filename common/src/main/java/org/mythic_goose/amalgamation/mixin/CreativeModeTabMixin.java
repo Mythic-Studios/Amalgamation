@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import org.mythic_goose.amalgamation.library.creative_tab_v1.TabLayout;
+import org.mythic_goose.amalgamation.api.creative_tab_v1.TabLayout;
 import org.mythic_goose.amalgamation.mixin.accessor.CreativeModeTabAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 

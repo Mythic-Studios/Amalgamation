@@ -2,7 +2,7 @@ package org.mythic_goose.amalgamation.platform.services;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
-import org.mythic_goose.amalgamation.library.registry_v1.RegistryEntry;
+import org.mythic_goose.amalgamation.api.registry_v1.RegistryEntry;
 
 import java.util.function.Supplier;
 

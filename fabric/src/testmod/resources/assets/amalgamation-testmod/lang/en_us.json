@@ -1,4 +1,6 @@
 {
   "itemGroup.amalgamation-testmod.colored_section": "Colored Section",
-  "itemGroup.amalgamation-testmod.textured_section": "Textured Section"
+  "itemGroup.amalgamation-testmod.textured_section": "Textured Section",
+
+  "tooltip.test": "~fCustom Test~n for ~rColors~n. Also there is ~dDark Red~n & ~aPurple across a shade~n. How cool is that"
 }

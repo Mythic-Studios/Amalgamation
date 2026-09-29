@@ -2,8 +2,8 @@ package org.mythic_goose.amalgamation.testmod;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
-import org.mythic_goose.amalgamation.library.registry_v1.BlockRegistry;
-import org.mythic_goose.amalgamation.library.registry_v1.RegistryEntry;
+import org.mythic_goose.amalgamation.api.registry_v1.BlockRegistry;
+import org.mythic_goose.amalgamation.api.registry_v1.RegistryEntry;
 
 public class TestBlocks extends BlockRegistry {
 

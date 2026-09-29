@@ -5,7 +5,7 @@ import org.mythic_goose.amalgamation.platform.services.IItemTooltipHelper;
 
 public class FabricItemTooltipHelper implements IItemTooltipHelper {
     @Override
-    public void register(org.mythic_goose.amalgamation.library.tooltip_v1.ItemTooltipCallback callback) {
+    public void register(org.mythic_goose.amalgamation.api.tooltip_v1.callback.ItemTooltipCallback callback) {
         ItemTooltipCallback.EVENT.register(callback::onTooltip);
     }
 }

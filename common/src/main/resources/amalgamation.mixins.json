@@ -10,9 +10,11 @@
   "client": [
     "ClientTooltipComponentMixin",
     "CreativeModeInventoryScreenMixin",
+    "FixToolTipMixin",
     "MixinMinecraft",
     "accessor.CreativeModeInventoryScreenAccessor",
-    "accessor.ItemPickerMenuAccessor"
+    "accessor.ItemPickerMenuAccessor",
+    "accessor.OrderedTextToolTipAccessor"
   ],
   "server": [],
   "injectors": {

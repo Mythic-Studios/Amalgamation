@@ -1,8 +1,8 @@
 package org.mythic_goose.amalgamation.testmod;
 
 import net.fabricmc.api.ModInitializer;
-import org.mythic_goose.amalgamation.library.registry_v1.DeferredRegister;
-import org.mythic_goose.amalgamation.library.registry_v1.FabricCreativeTabRegistrar;
+import org.mythic_goose.amalgamation.api.registry_v1.DeferredRegister;
+import org.mythic_goose.amalgamation.api.registry_v1.FabricCreativeTabRegistrar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

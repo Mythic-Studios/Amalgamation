@@ -2,7 +2,7 @@ package org.mythic_goose.amalgamation.platform;
 
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import org.mythic_goose.amalgamation.library.tooltip_v1.ItemTooltipCallback;
+import org.mythic_goose.amalgamation.api.tooltip_v1.callback.ItemTooltipCallback;
 import org.mythic_goose.amalgamation.platform.services.IItemTooltipHelper;
 
 public class NeoForgeItemTooltipHelper implements IItemTooltipHelper {

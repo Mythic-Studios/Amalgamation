@@ -1,14 +1,12 @@
 package org.mythic_goose.amalgamation.testmod;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Items;
-import org.mythic_goose.amalgamation.library.creative_tab_v1.CreativeTabRegistrar;
-import org.mythic_goose.amalgamation.library.creative_tab_v1.SectionStyle;
-import org.mythic_goose.amalgamation.library.creative_tab_v1.SectionTabBuilder;
+import org.mythic_goose.amalgamation.api.creative_tab_v1.CreativeTabRegistrar;
+import org.mythic_goose.amalgamation.api.creative_tab_v1.SectionStyle;
+import org.mythic_goose.amalgamation.api.creative_tab_v1.SectionTabBuilder;
 
 import java.util.function.Supplier;
 

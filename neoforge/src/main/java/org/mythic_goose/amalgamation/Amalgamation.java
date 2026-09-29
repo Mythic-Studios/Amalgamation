@@ -2,7 +2,7 @@ package org.mythic_goose.amalgamation;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
-import org.mythic_goose.amalgamation.library.attachment_v1.NeoForgeAttachmentPlatform;
+import org.mythic_goose.amalgamation.api.attachment_v1.NeoForgeAttachmentPlatform;
 import org.mythic_goose.amalgamation.platform.NeoForgeAttachmentHelper;
 import org.mythic_goose.amalgamation.platform.NeoForgePlatformHelper;
 

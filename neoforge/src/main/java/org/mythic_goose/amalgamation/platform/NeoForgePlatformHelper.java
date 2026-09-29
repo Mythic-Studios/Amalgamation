@@ -9,7 +9,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.mythic_goose.amalgamation.library.registry_v1.RegistryEntry;
+import org.mythic_goose.amalgamation.api.registry_v1.RegistryEntry;
 import org.mythic_goose.amalgamation.platform.services.IPlatformHelper;
 
 import java.util.Map;

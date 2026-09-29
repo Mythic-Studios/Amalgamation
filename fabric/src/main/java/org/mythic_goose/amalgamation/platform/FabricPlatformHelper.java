@@ -4,7 +4,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import org.mythic_goose.amalgamation.library.registry_v1.RegistryEntry;
+import org.mythic_goose.amalgamation.api.registry_v1.RegistryEntry;
 import org.mythic_goose.amalgamation.platform.services.IPlatformHelper;
 import net.fabricmc.loader.api.FabricLoader;
 

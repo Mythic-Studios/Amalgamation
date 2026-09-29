@@ -5,8 +5,8 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentSyncPredicate;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentTarget;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.world.entity.Entity;
-import org.mythic_goose.amalgamation.library.attachment_v1.AttachmentSpec;
-import org.mythic_goose.amalgamation.library.attachment_v1.CommonAttachment;
+import org.mythic_goose.amalgamation.api.attachment_v1.AttachmentSpec;
+import org.mythic_goose.amalgamation.api.attachment_v1.CommonAttachment;
 import org.mythic_goose.amalgamation.platform.services.IAttachmentHelper;
 
 public class FabricAttachmentHelper implements IAttachmentHelper {

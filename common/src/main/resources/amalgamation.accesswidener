@@ -1,8 +1,0 @@
-classTweaker v1 official
-accessible method net/minecraft/client/data/models/ItemModelGenerators createFlatItemModel (Lnet/minecraft/world/item/Item;Lnet/minecraft/client/data/models/model/ModelTemplate;)Lnet/minecraft/resources/Identifier;
-accessible method net/minecraft/client/data/models/ItemModelGenerators createFlatModelDispatch (Lnet/minecraft/client/renderer/item/ItemModel$Unbaked;Lnet/minecraft/client/renderer/item/ItemModel$Unbaked;)Lnet/minecraft/client/renderer/item/ItemModel$Unbaked;
-accessible method net/minecraft/client/data/models/ItemModelGenerators generateLayeredItem (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/resources/model/sprite/Material;Lnet/minecraft/client/resources/model/sprite/Material;)Lnet/minecraft/resources/Identifier;
-accessible method net/minecraft/client/data/models/ItemModelGenerators generateLayeredItem (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/resources/model/sprite/Material;Lnet/minecraft/client/resources/model/sprite/Material;Lnet/minecraft/client/resources/model/sprite/Material;)V
-accessible field net/minecraft/client/data/models/ItemModelGenerators modelOutput Ljava/util/function/BiConsumer;
-accessible method net/minecraft/client/data/models/BlockModelGenerators createTrivialBlock (Lnet/minecraft/world/level/block/Block;Lnet/minecraft/client/data/models/model/TexturedModel$Provider;)V
-accessible method net/minecraft/world/item/equipment/ArmorMaterials makeDefense	(IIIII)Ljava/util/Map;
