@@ -1,5 +1,6 @@
 package org.mythic_goose.amalgamation.api.menu_v1;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
@@ -46,7 +47,12 @@ public final class ExtendedMenuProviders {
         // would be lost permanently if that race is lost.
         ExtendedMenuNetworking.open(player, syncId, type, provider.getDisplayName(), data);
 
-        player.server.execute(() -> {
+        // Use the level's server rather than the private ServerPlayer.server field,
+        // so this doesn't depend on the access widener being applied at runtime.
+        MinecraftServer server = player.level().getServer();
+        if (server == null) return;
+
+        server.execute(() -> {
             try {
                 INIT_MENU.invoke(player, menu);
             } catch (ReflectiveOperationException e) {
