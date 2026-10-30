@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,26 +25,20 @@ import java.util.function.Supplier;
  * Any number of mods can use this class at the same time, each with its own mod id.
  * Every mod is treated as a separate owner and is identified by:
  * <ol>
- *   <li><b>The jar (or build output folder) its classes are loaded from.</b> This is
- *       exact: two mods can share a package root such as {@code org.mythic_goose} and
- *       still never be confused with each other.</li>
- *   <li><b>The package of its entrypoint</b> (and sub-packages), as a fallback for
- *       environments where the code source is unavailable. The longest matching
- *       package wins.</li>
+ *   <li><b>The jar (or build output folder) its classes are loaded from.</b></li>
+ *   <li><b>The package of its entrypoint</b> (and sub-packages), as a fallback.
+ *       The longest matching package wins.</li>
  * </ol>
- * There is no "only one mod declared so far" guess any more. If the calling class
- * cannot be matched to a declared mod, an {@link IllegalStateException} is thrown
- * instead of silently registering under another mod's namespace.
+ * If the calling class cannot be matched to a declared mod, an
+ * {@link IllegalStateException} is thrown.
  *
- * <h2>Setting the mod id (once per mod)</h2>
- * <pre>{@code DeferredRegister.setModId(YourMod.MOD_ID); }</pre>
- * Call this from your main entrypoint before any registry class is touched. If your
- * registry classes live outside the entrypoint's package, also declare them:
- * <pre>{@code DeferredRegister.setModId(YourMod.MOD_ID, "com.you.yourmod.registry"); }</pre>
+ * <h2>Ownership tracking</h2>
+ * Every registered id is recorded together with the mod that registered it. Registering
+ * the same {@code registry + id} twice throws, naming both mods and the calling class,
+ * so cross-mod collisions are reported instead of silently misbehaving.
  *
- * <p>If you would rather not rely on any lookup, the explicit overloads
- * {@link #create(String, Registry)} and {@link #id(String, String)} take the mod id
- * directly and skip resolution entirely.
+ * <p>The explicit overloads {@link #create(String, Registry)} and {@link #id(String, String)}
+ * take the mod id directly and skip resolution entirely.
  */
 public final class DeferredRegister<T> {
 
@@ -53,13 +48,17 @@ public final class DeferredRegister<T> {
     /** Code source (jar or output folder) -> that mod's id. */
     private static final Map<String, String> SOURCE_IDS = new ConcurrentHashMap<>();
 
+    /**
+     * "registryKey|namespace:path" -> owning mod id. The registry is part of the key because
+     * a block and its item legitimately share a path.
+     */
+    private static final Map<String, String> REGISTERED = new ConcurrentHashMap<>();
+
     private static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /**
-     * Package holding this library's own registry helpers (DeferredRegister, BlockRegistry, ...).
-     * Frames from this package and its sub-packages are skipped when working out who the
-     * "real" caller is, so helper classes layered on top of DeferredRegister don't get
-     * mistaken for the calling mod.
+     * Package holding this library's own registry helpers. Frames from this package and its
+     * sub-packages are skipped when working out who the "real" caller is.
      */
     private static final String LIB_PACKAGE = DeferredRegister.class.getPackageName();
 
@@ -95,8 +94,7 @@ public final class DeferredRegister<T> {
 
     /**
      * Declares the mod id for the calling class's jar and package. Kept as its own
-     * method (not folded into the varargs overload) so mods compiled against earlier
-     * versions of this library, which call {@code setModId(String)}, keep linking.
+     * method so mods compiled against earlier versions of this library keep linking.
      *
      * @param modId the mod id to associate with the caller
      * @throws IllegalStateException if the jar or package is already owned by a different mod id
@@ -110,7 +108,7 @@ public final class DeferredRegister<T> {
         Class<?> caller = callerClass();
         trace("setModId('" + modId + "') called from " + caller.getName()
                 + " source=" + sourceOf(caller)
-                + " extraPackages=" + (extraPackages == null ? "[]" : java.util.Arrays.toString(extraPackages)));
+                + " extraPackages=" + (extraPackages == null ? "[]" : Arrays.toString(extraPackages)));
 
         bind(PACKAGE_IDS, caller.getPackageName(), modId, "Package");
 
@@ -229,9 +227,7 @@ public final class DeferredRegister<T> {
      * Creates a helper bound to the given vanilla registry, using the mod id declared via
      * {@link #setModId(String, String...)} for the calling class.
      *
-     * @param registry accepts a registry of any supertype of {@code T}, so e.g. items
-     *                 and block-items can share one {@code DeferredRegister<Item>}
-     *                 bound to {@code BuiltInRegistries.ITEM}
+     * @param registry accepts a registry of any supertype of {@code T}
      * @param <T> the registered type
      * @return a new helper
      */
@@ -253,7 +249,9 @@ public final class DeferredRegister<T> {
      * @return a new helper
      */
     public static <T> DeferredRegister<T> create(String modId, Registry<? super T> registry) {
-        trace("create(" + registry.key() + ") with explicit modId='" + modId + "'");
+        Class<?> caller = callerClass();
+        trace("create(" + registry.key() + ") with explicit modId='" + modId + "' from " + caller.getName()
+                + " source=" + sourceOf(caller));
         return new DeferredRegister<>(modId, registry);
     }
 
@@ -268,10 +266,30 @@ public final class DeferredRegister<T> {
      * @param factory supplies the object to register
      * @param <U> the concrete registered type
      * @return the registry entry
+     * @throws IllegalStateException if the same registry + id was already registered
      */
     @SuppressWarnings("unchecked")
     public <U extends T> RegistryEntry<U> register(String path, Supplier<U> factory) {
-        RegistryEntry<U> entry = RegistrationBackends.get().register((Registry<U>) registry, id(modId, path), factory);
+        Identifier id = id(modId, path);
+        String key = registry.key() + "|" + id;
+        Class<?> caller = callerClass();
+
+        String owner = REGISTERED.putIfAbsent(key, modId);
+        if (owner != null) {
+            throw new IllegalStateException("Duplicate registration " + key
+                    + ": already registered by mod '" + owner + "', now requested by mod '"
+                    + modId + "' from " + caller.getName() + " (source=" + sourceOf(caller) + ")");
+        }
+        trace("register " + key + " (mod '" + modId + "') from " + caller.getName()
+                + " source=" + sourceOf(caller));
+
+        RegistryEntry<U> entry;
+        try {
+            entry = RegistrationBackends.get().register((Registry<U>) registry, id, factory);
+        } catch (RuntimeException | Error e) {
+            REGISTERED.remove(key, modId);
+            throw e;
+        }
         entries.add((RegistryEntry<T>) entry);
         return entry;
     }

@@ -14,31 +14,57 @@ import java.util.function.Supplier;
 
 /**
  * NeoForge defers actual registration until each registry's {@code RegisterEvent}
- * fires. Call {@link #init(IEventBus)} once, in your mod's constructor, before
- * registering anything through the common {@code *Registry} helpers.
+ * fires. Each mod must call {@link #init(String, IEventBus)} once, in its constructor,
+ * with its own mod id and event bus, before registering anything.
+ *
+ * <p>Deferred registers and event buses are partitioned per mod namespace, so several
+ * mods using this library never share a namespace or a bus.
  */
 public class NeoForgeRegistrationBackend implements RegistrationBackend {
 
-    private static volatile IEventBus modEventBus;
-    private final Map<ResourceKey<? extends Registry<?>>, DeferredRegister<?>> deferredRegisters = new ConcurrentHashMap<>();
+    /** mod id (namespace) -> that mod's event bus. */
+    private static final Map<String, IEventBus> BUSES = new ConcurrentHashMap<>();
 
-    /** Call from your mod's constructor: {@code NeoForgeRegistrationBackend.init(modEventBus);} */
-    public static void init(IEventBus modEventBus) {
-        NeoForgeRegistrationBackend.modEventBus = modEventBus;
+    /** Used only by the legacy single-argument {@link #init(IEventBus)}. */
+    private static volatile IEventBus fallbackBus;
+
+    private record Key(ResourceKey<? extends Registry<?>> registry, String namespace) {}
+
+    private final Map<Key, DeferredRegister<?>> deferredRegisters = new ConcurrentHashMap<>();
+
+    /**
+     * Call from each mod's constructor:
+     * {@code NeoForgeRegistrationBackend.init(MOD_ID, modEventBus);}
+     */
+    public static void init(String modId, IEventBus bus) {
+        BUSES.put(modId, bus);
+    }
+
+    /**
+     * @deprecated Cannot tell mods apart. Only used as a fallback for namespaces that never
+     *             called {@link #init(String, IEventBus)}. Prefer the two-argument version.
+     */
+    @Deprecated
+    public static void init(IEventBus bus) {
+        fallbackBus = bus;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> RegistryEntry<T> register(Registry<T> registry, Identifier id, Supplier<T> factory) {
-        IEventBus bus = modEventBus;
+        String namespace = id.getNamespace();
+        IEventBus bus = BUSES.getOrDefault(namespace, fallbackBus);
         if (bus == null) {
             throw new IllegalStateException(
-                    "NeoForgeRegistrationBackend.init(modEventBus) must be called in your mod's "
+                    "No event bus for mod '" + namespace + "'. Call "
+                            + "NeoForgeRegistrationBackend.init(\"" + namespace + "\", modEventBus) in your mod's "
                             + "constructor before registering \"" + id + "\"");
         }
 
-        DeferredRegister<T> deferred = (DeferredRegister<T>) deferredRegisters.computeIfAbsent(registry.key(), key -> {
-            DeferredRegister<T> created = DeferredRegister.create((ResourceKey<Registry<T>>) key, id.getNamespace());
+        Key key = new Key(registry.key(), namespace);
+        DeferredRegister<T> deferred = (DeferredRegister<T>) deferredRegisters.computeIfAbsent(key, k -> {
+            DeferredRegister<T> created =
+                    DeferredRegister.create((ResourceKey<Registry<T>>) registry.key(), namespace);
             created.register(bus);
             return created;
         });
