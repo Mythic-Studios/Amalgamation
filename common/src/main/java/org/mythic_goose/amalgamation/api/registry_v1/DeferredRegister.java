@@ -45,6 +45,14 @@ public final class DeferredRegister<T> {
 
     private static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
+    /**
+     * Package holding this library's own registry helpers (DeferredRegister, BlockRegistry, ...).
+     * Frames from this package and its sub-packages are skipped when working out who the
+     * "real" caller is, so helper classes layered on top of DeferredRegister don't get
+     * mistaken for the calling mod.
+     */
+    private static final String LIB_PACKAGE = DeferredRegister.class.getPackageName();
+
     private final String modId;
     private final Registry<? super T> registry;
     private final List<RegistryEntry<T>> entries = new ArrayList<>();
@@ -60,6 +68,7 @@ public final class DeferredRegister<T> {
      * Declares the mod id for the calling class's package and everything below it. Call
      * once per mod, from its main entrypoint, before any registration happens.
      *
+     * @param modId the mod id to associate with the caller's package
      * @throws IllegalStateException if this package already has a different mod id
      */
     public static void setModId(String modId) {
@@ -72,15 +81,24 @@ public final class DeferredRegister<T> {
         }
     }
 
-    /** The mod id this helper registers under. */
+    /**
+     * The mod id this helper registers under.
+     *
+     * @return the mod id
+     */
     public String getModId() {
         return modId;
+    }
+
+    private static boolean isLibraryClass(Class<?> c) {
+        String p = c.getPackageName();
+        return p.equals(LIB_PACKAGE) || p.startsWith(LIB_PACKAGE + ".");
     }
 
     private static Class<?> callerClass() {
         return WALKER.walk(frames -> frames
                 .map(StackWalker.StackFrame::getDeclaringClass)
-                .filter(c -> c != DeferredRegister.class)
+                .filter(c -> !isLibraryClass(c))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not determine calling class")));
     }
@@ -116,12 +134,23 @@ public final class DeferredRegister<T> {
 
     // ------------------------------------------------------------------- ids
 
-    /** Builds a namespaced id for the calling mod (resolved from the calling class's package). */
+    /**
+     * Builds a namespaced id for the calling mod (resolved from the calling class's package).
+     *
+     * @param path the id path
+     * @return the namespaced identifier
+     */
     public static Identifier id(String path) {
         return id(resolveModId(callerClass()), path);
     }
 
-    /** Builds a namespaced id with an explicit mod id. */
+    /**
+     * Builds a namespaced id with an explicit mod id.
+     *
+     * @param modId the namespace
+     * @param path the id path
+     * @return the namespaced identifier
+     */
     public static Identifier id(String modId, String path) {
         return Identifier.fromNamespaceAndPath(modId, path);
     }
@@ -135,12 +164,21 @@ public final class DeferredRegister<T> {
      * @param registry accepts a registry of any supertype of {@code T}, so e.g. items
      *                 and block-items can share one {@code DeferredRegister<Item>}
      *                 bound to {@code BuiltInRegistries.ITEM}
+     * @param <T> the registered type
+     * @return a new helper
      */
     public static <T> DeferredRegister<T> create(Registry<? super T> registry) {
         return new DeferredRegister<>(resolveModId(callerClass()), registry);
     }
 
-    /** Creates a helper bound to the given registry with an explicit mod id. */
+    /**
+     * Creates a helper bound to the given registry with an explicit mod id.
+     *
+     * @param modId the mod id to register under
+     * @param registry the registry to bind to
+     * @param <T> the registered type
+     * @return a new helper
+     */
     public static <T> DeferredRegister<T> create(String modId, Registry<? super T> registry) {
         return new DeferredRegister<>(modId, registry);
     }
@@ -151,6 +189,11 @@ public final class DeferredRegister<T> {
      * Registers {@code factory} under {@code path}. {@code U} may be any subtype of
      * {@code T} - e.g. a {@code DeferredRegister<Item>} bound to the item registry can
      * register a {@code BlockItem} and hand back a {@code RegistryEntry<BlockItem>}.
+     *
+     * @param path the id path
+     * @param factory supplies the object to register
+     * @param <U> the concrete registered type
+     * @return the registry entry
      */
     @SuppressWarnings("unchecked")
     public <U extends T> RegistryEntry<U> register(String path, Supplier<U> factory) {
@@ -162,6 +205,8 @@ public final class DeferredRegister<T> {
     /**
      * All entries registered through this helper, in registration order. Don't resolve
      * these (via {@code .get()}) before your loader's registration phase has actually run.
+     *
+     * @return an unmodifiable view of the entries
      */
     public List<RegistryEntry<T>> all() {
         return Collections.unmodifiableList(entries);
