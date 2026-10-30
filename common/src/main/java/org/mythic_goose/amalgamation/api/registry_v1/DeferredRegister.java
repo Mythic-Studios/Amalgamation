@@ -84,6 +84,22 @@ public final class DeferredRegister<T> {
      * @throws IllegalStateException if the jar or a package is already owned by a different mod id
      */
     public static void setModId(String modId, String... extraPackages) {
+        bindMod(modId, extraPackages);
+    }
+
+    /**
+     * Declares the mod id for the calling class's jar and package. Kept as its own
+     * method (not folded into the varargs overload) so mods compiled against earlier
+     * versions of this library, which call {@code setModId(String)}, keep linking.
+     *
+     * @param modId the mod id to associate with the caller
+     * @throws IllegalStateException if the jar or package is already owned by a different mod id
+     */
+    public static void setModId(String modId) {
+        bindMod(modId, null);
+    }
+
+    private static void bindMod(String modId, String[] extraPackages) {
         Objects.requireNonNull(modId, "modId");
         Class<?> caller = callerClass();
 
