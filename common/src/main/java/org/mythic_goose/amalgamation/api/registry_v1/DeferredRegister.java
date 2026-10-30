@@ -3,13 +3,13 @@ package org.mythic_goose.amalgamation.api.registry_v1;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 
+import java.net.URL;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -20,28 +20,38 @@ import java.util.function.Supplier;
  * through {@link RegistrationBackends}, so it behaves identically on every supported
  * loader.
  *
+ * <h2>Multiple mods, one library</h2>
+ * Any number of mods can use this class at the same time, each with its own mod id.
+ * Every mod is treated as a separate owner and is identified by:
+ * <ol>
+ *   <li><b>The jar (or build output folder) its classes are loaded from.</b> This is
+ *       exact: two mods can share a package root such as {@code org.mythic_goose} and
+ *       still never be confused with each other.</li>
+ *   <li><b>The package of its entrypoint</b> (and sub-packages), as a fallback for
+ *       environments where the code source is unavailable. The longest matching
+ *       package wins.</li>
+ * </ol>
+ * There is no "only one mod declared so far" guess any more. If the calling class
+ * cannot be matched to a declared mod, an {@link IllegalStateException} is thrown
+ * instead of silently registering under another mod's namespace.
+ *
  * <h2>Setting the mod id (once per mod)</h2>
- * <p>Call this once from each mod's main entrypoint, before any registry class is touched:
  * <pre>{@code DeferredRegister.setModId(YourMod.MOD_ID); }</pre>
- * The id is tied to the <em>package</em> of the class that calls it (and its
- * sub-packages), so several mods can each call it once without clashing. This means your
- * entrypoint should live in your mod's root package, e.g. {@code com.you.yourmod}, with
- * your registry classes in that package or below it.
+ * Call this from your main entrypoint before any registry class is touched. If your
+ * registry classes live outside the entrypoint's package, also declare them:
+ * <pre>{@code DeferredRegister.setModId(YourMod.MOD_ID, "com.you.yourmod.registry"); }</pre>
  *
- * <p>After that, just use {@link #create(Registry)} and {@link #id(String)} anywhere in
- * your mod; the right id is picked automatically from the calling class.
- *
- * <p>For registries this class doesn't wrap directly - datapack registries like
- * enchantments, or vanilla registries you register into by hand, like particle types -
- * use the static {@link #id(String)} to build a correctly-namespaced id.
- *
- * <p>If you'd rather not rely on packages, the explicit overloads
- * {@link #create(String, Registry)} and {@link #id(String, String)} take the mod id directly.
+ * <p>If you would rather not rely on any lookup, the explicit overloads
+ * {@link #create(String, Registry)} and {@link #id(String, String)} take the mod id
+ * directly and skip resolution entirely.
  */
 public final class DeferredRegister<T> {
 
-    /** Root package of a mod's entrypoint -> that mod's id. */
-    private static final Map<String, String> MOD_IDS = new ConcurrentHashMap<>();
+    /** Package (root of a mod's code) -> that mod's id. */
+    private static final Map<String, String> PACKAGE_IDS = new ConcurrentHashMap<>();
+
+    /** Code source (jar or output folder) -> that mod's id. */
+    private static final Map<String, String> SOURCE_IDS = new ConcurrentHashMap<>();
 
     private static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
@@ -65,19 +75,37 @@ public final class DeferredRegister<T> {
     // ---------------------------------------------------------------- mod id
 
     /**
-     * Declares the mod id for the calling class's package and everything below it. Call
-     * once per mod, from its main entrypoint, before any registration happens.
+     * Declares the mod id for the calling class's jar and package. Call once per mod,
+     * from its main entrypoint, before any registration happens.
      *
-     * @param modId the mod id to associate with the caller's package
-     * @throws IllegalStateException if this package already has a different mod id
+     * @param modId the mod id to associate with the caller
+     * @param extraPackages additional packages (and their sub-packages) that also belong to
+     *                      this mod, for registry classes outside the entrypoint's package
+     * @throws IllegalStateException if the jar or a package is already owned by a different mod id
      */
-    public static void setModId(String modId) {
+    public static void setModId(String modId, String... extraPackages) {
         Objects.requireNonNull(modId, "modId");
-        String pkg = packageOf(callerClass());
-        String existing = MOD_IDS.putIfAbsent(pkg, modId);
+        Class<?> caller = callerClass();
+
+        bind(PACKAGE_IDS, caller.getPackageName(), modId, "Package");
+
+        String source = sourceOf(caller);
+        if (source != null) {
+            bind(SOURCE_IDS, source, modId, "Code source");
+        }
+
+        if (extraPackages != null) {
+            for (String pkg : extraPackages) {
+                bind(PACKAGE_IDS, Objects.requireNonNull(pkg, "extraPackages entry"), modId, "Package");
+            }
+        }
+    }
+
+    private static void bind(Map<String, String> map, String key, String modId, String what) {
+        String existing = map.putIfAbsent(key, modId);
         if (existing != null && !existing.equals(modId)) {
-            throw new IllegalStateException("Mod id for package '" + pkg + "' already set to '"
-                    + existing + "', cannot change it to '" + modId + "'");
+            throw new IllegalStateException(what + " '" + key + "' already belongs to mod '"
+                    + existing + "', cannot also assign it to '" + modId + "'");
         }
     }
 
@@ -103,39 +131,54 @@ public final class DeferredRegister<T> {
                 .orElseThrow(() -> new IllegalStateException("Could not determine calling class")));
     }
 
-    private static String packageOf(Class<?> c) {
-        return c.getPackageName();
+    /** The jar or folder a class was loaded from, or null if it can't be determined. */
+    private static String sourceOf(Class<?> c) {
+        try {
+            CodeSource cs = c.getProtectionDomain().getCodeSource();
+            if (cs == null) {
+                return null;
+            }
+            URL location = cs.getLocation();
+            return location == null ? null : location.toString();
+        } catch (SecurityException e) {
+            return null;
+        }
     }
 
-    /** Finds the mod id for a calling class: longest matching package prefix wins. */
+    /**
+     * Finds the mod id for a calling class: exact code source first, then longest matching
+     * declared package. Throws if neither matches.
+     */
     private static String resolveModId(Class<?> caller) {
-        String callerPkg = packageOf(caller);
+        String source = sourceOf(caller);
+        if (source != null) {
+            String bySource = SOURCE_IDS.get(source);
+            if (bySource != null) {
+                return bySource;
+            }
+        }
+
+        String callerPkg = caller.getPackageName();
         String bestPkg = null;
-        for (String pkg : MOD_IDS.keySet()) {
+        for (String pkg : PACKAGE_IDS.keySet()) {
             boolean matches = callerPkg.equals(pkg) || callerPkg.startsWith(pkg + ".");
             if (matches && (bestPkg == null || pkg.length() > bestPkg.length())) {
                 bestPkg = pkg;
             }
         }
         if (bestPkg != null) {
-            return MOD_IDS.get(bestPkg);
-        }
-
-        // Fallback: if only one distinct mod id has been declared, there's no ambiguity.
-        Set<String> distinct = new HashSet<>(MOD_IDS.values());
-        if (distinct.size() == 1) {
-            return distinct.iterator().next();
+            return PACKAGE_IDS.get(bestPkg);
         }
 
         throw new IllegalStateException("No mod id found for class '" + caller.getName()
-                + "'. Call DeferredRegister.setModId(...) once from your mod's main entrypoint, "
-                + "and keep your registry classes in that entrypoint's package or a sub-package.");
+                + "'. Call DeferredRegister.setModId(...) from your mod's main entrypoint "
+                + "before any registry class loads, or use the overloads that take the mod id explicitly.");
     }
 
     // ------------------------------------------------------------------- ids
 
     /**
-     * Builds a namespaced id for the calling mod (resolved from the calling class's package).
+     * Builds a namespaced id for the calling mod (resolved from the calling class).
      *
      * @param path the id path
      * @return the namespaced identifier
@@ -159,7 +202,7 @@ public final class DeferredRegister<T> {
 
     /**
      * Creates a helper bound to the given vanilla registry, using the mod id declared via
-     * {@link #setModId(String)} for the calling class's package.
+     * {@link #setModId(String, String...)} for the calling class.
      *
      * @param registry accepts a registry of any supertype of {@code T}, so e.g. items
      *                 and block-items can share one {@code DeferredRegister<Item>}
@@ -172,7 +215,8 @@ public final class DeferredRegister<T> {
     }
 
     /**
-     * Creates a helper bound to the given registry with an explicit mod id.
+     * Creates a helper bound to the given registry with an explicit mod id. Several helpers
+     * with different mod ids can coexist freely.
      *
      * @param modId the mod id to register under
      * @param registry the registry to bind to
