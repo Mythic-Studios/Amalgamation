@@ -63,6 +63,12 @@ public final class DeferredRegister<T> {
      */
     private static final String LIB_PACKAGE = DeferredRegister.class.getPackageName();
 
+    private static final System.Logger LOG = System.getLogger("amalgamation/DeferredRegister");
+
+    private static void trace(String message) {
+        LOG.log(System.Logger.Level.INFO, message);
+    }
+
     private final String modId;
     private final Registry<? super T> registry;
     private final List<RegistryEntry<T>> entries = new ArrayList<>();
@@ -102,6 +108,9 @@ public final class DeferredRegister<T> {
     private static void bindMod(String modId, String[] extraPackages) {
         Objects.requireNonNull(modId, "modId");
         Class<?> caller = callerClass();
+        trace("setModId('" + modId + "') called from " + caller.getName()
+                + " source=" + sourceOf(caller)
+                + " extraPackages=" + (extraPackages == null ? "[]" : java.util.Arrays.toString(extraPackages)));
 
         bind(PACKAGE_IDS, caller.getPackageName(), modId, "Package");
 
@@ -227,7 +236,11 @@ public final class DeferredRegister<T> {
      * @return a new helper
      */
     public static <T> DeferredRegister<T> create(Registry<? super T> registry) {
-        return new DeferredRegister<>(resolveModId(callerClass()), registry);
+        Class<?> caller = callerClass();
+        String resolved = resolveModId(caller);
+        trace("create(" + registry.key() + ") from " + caller.getName()
+                + " source=" + sourceOf(caller) + " -> modId='" + resolved + "'");
+        return new DeferredRegister<>(resolved, registry);
     }
 
     /**
@@ -240,6 +253,7 @@ public final class DeferredRegister<T> {
      * @return a new helper
      */
     public static <T> DeferredRegister<T> create(String modId, Registry<? super T> registry) {
+        trace("create(" + registry.key() + ") with explicit modId='" + modId + "'");
         return new DeferredRegister<>(modId, registry);
     }
 
