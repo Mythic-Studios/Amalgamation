@@ -10,8 +10,9 @@ import java.util.function.Function;
 
 public abstract class EntityRegistry {
 
-    private static final DeferredRegister<EntityType<?>> ENTITIES =
-            DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE);
+    private static DeferredRegister<EntityType<?>> entities() {
+        return DeferredRegister.forCallingMod(BuiltInRegistries.ENTITY_TYPE);
+    }
 
     @SuppressWarnings("unchecked")
     protected static <T extends Entity> RegistryEntry<EntityType<T>> registerEntity(
@@ -21,10 +22,11 @@ public abstract class EntityRegistry {
                 ResourceKey.create(BuiltInRegistries.ENTITY_TYPE.key(), DeferredRegister.id(path));
 
         return (RegistryEntry<EntityType<T>>) (RegistryEntry<?>)
-                ENTITIES.register(path, () -> factory.apply(key));
+                entities().register(path, () -> factory.apply(key));
     }
 
+    /** All entity types registered by the calling mod. */
     public static List<RegistryEntry<EntityType<?>>> all() {
-        return ENTITIES.all();
+        return entities().all();
     }
 }

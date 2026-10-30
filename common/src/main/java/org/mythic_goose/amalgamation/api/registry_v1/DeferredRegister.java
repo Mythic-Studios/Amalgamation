@@ -303,4 +303,23 @@ public final class DeferredRegister<T> {
     public List<RegistryEntry<T>> all() {
         return Collections.unmodifiableList(entries);
     }
+
+    // ------------------------------------------------------- per-mod registers
+
+    /** (modId + registry) -> shared register for that mod. */
+    private static final Map<String, DeferredRegister<?>> PER_MOD = new ConcurrentHashMap<>();
+
+    /**
+     * Returns the register for the mod that is calling, creating it on first use. Used by the
+     * *Registry base classes so each mod gets its own register instead of sharing one.
+     * Callers in this library's package are skipped, so the "caller" is the mod's own class
+     * (e.g. NSBlocks).
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> DeferredRegister<T> forCallingMod(Registry<? super T> registry) {
+        String modId = resolveModId(callerClass());
+        return (DeferredRegister<T>) PER_MOD.computeIfAbsent(
+                modId + "|" + registry.key(),
+                k -> new DeferredRegister<>(modId, registry));
+    }
 }
