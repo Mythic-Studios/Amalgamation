@@ -3,6 +3,7 @@ package org.mythic_goose.amalgamation.testmod;
 import net.fabricmc.api.ModInitializer;
 import org.mythic_goose.amalgamation.api.registry_v1.DeferredRegister;
 import org.mythic_goose.amalgamation.api.registry_v1.FabricCreativeTabRegistrar;
+import org.mythic_goose.amalgamation.api.tooltip_v2.panel.PanelContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,5 +22,7 @@ public class AmalgamationTestMod implements ModInitializer {
         TestItems.registerTestItems();
 
         TestCreativeTab.init(new FabricCreativeTabRegistrar(MOD_ID));
+
+        PanelContext.init();
     }
 }

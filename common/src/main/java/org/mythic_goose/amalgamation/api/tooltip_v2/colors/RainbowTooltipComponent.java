@@ -1,9 +1,9 @@
-package org.mythic_goose.amalgamation.api.tooltip_v1.colors;
+package org.mythic_goose.amalgamation.api.tooltip_v2.colors;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import org.mythic_goose.amalgamation.api.tooltip_v1.wrapping.WrappableTooltipComponent;
+import org.mythic_goose.amalgamation.api.tooltip_v2.wrapping.WrappableTooltipComponent;
 
 import java.util.ArrayList;
 import java.util.List;

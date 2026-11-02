@@ -9,7 +9,7 @@ import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2ic;
 import org.jspecify.annotations.Nullable;
-import org.mythic_goose.amalgamation.api.tooltip_v1.wrapping.TooltipHelper;
+import org.mythic_goose.amalgamation.api.tooltip_v2.wrapping.TooltipHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

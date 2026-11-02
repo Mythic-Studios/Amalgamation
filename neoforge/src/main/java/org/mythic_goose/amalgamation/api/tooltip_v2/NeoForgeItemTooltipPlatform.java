@@ -1,9 +1,9 @@
-package org.mythic_goose.amalgamation.api.tooltip_v1;
+package org.mythic_goose.amalgamation.api.tooltip_v2;
 
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import org.mythic_goose.amalgamation.api.tooltip_v1.callback.ItemTooltipCallback;
-import org.mythic_goose.amalgamation.api.tooltip_v1.callback.ItemTooltipPlatform;
+import org.mythic_goose.amalgamation.api.tooltip_v2.callback.ItemTooltipCallback;
+import org.mythic_goose.amalgamation.api.tooltip_v2.callback.ItemTooltipPlatform;
 
 public final class NeoForgeItemTooltipPlatform implements ItemTooltipPlatform {
     @Override

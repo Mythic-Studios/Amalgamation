@@ -1,7 +1,6 @@
-package org.mythic_goose.amalgamation.api.tooltip_v1.colors;
+package org.mythic_goose.amalgamation.api.tooltip_v2.colors;
 
 public enum TooltipStyle {
-    // animated rainbow
     RAINBOW("~r") {
         @Override
         public int color(int index, int length, long time) {
@@ -10,7 +9,6 @@ public enum TooltipStyle {
         }
     },
 
-    // Pastel rainbow: same hue cycle as RAINBOW, but soft and shimmering
     FOIL("~f") {
         @Override
         public int color(int index, int length, long time) {
@@ -24,8 +22,7 @@ public enum TooltipStyle {
         }
     },
 
-    // dark red, slow pulse
-    DARK("~d") {
+    DARK_RED("~e") {
         private static final int A = 0x7A0F1E; // deep red
         private static final int B = 0xD0243B; // brighter crimson (keeps it readable on the dark tooltip bg)
 
@@ -36,7 +33,6 @@ public enum TooltipStyle {
         }
     },
 
-    // indigo <-> pink
     PURPLE("~a") {
         private static final int A = 0x5B6CFF; // indigo/blue
         private static final int B = 0xE0559F; // pink
@@ -46,7 +42,64 @@ public enum TooltipStyle {
             float t = wave(index * 0.08f - time / 3000f);
             return 0xFF000000 | lerp(A, B, t);
         }
-    };
+    },
+
+    MYTHIC_SIGNATURE("~p") {
+        private static final int A = 0xd977aa;
+        private static final int B = 0x9f1e61;
+
+        @Override
+        public int color(int index, int length, long timeMillis) {
+            float t = wave(index * 0.08f - timeMillis / 3000f);
+            return 0xFF000000 | lerp(A, B, t);
+        }
+    },
+
+    RARE_SEA("~b") {
+        private static final int A = 0x3d85c6;
+        private static final int B = 0x1f4364;
+
+        @Override
+        public int color(int index, int length, long timeMillis) {
+            float t = wave(index * 0.08f - timeMillis / 3000f);
+            return 0xFF000000 | lerp(A, B, t);
+        }
+    },
+
+    UNCOMMON("~u") {
+        private static final int A = 0x49ba18;
+        private static final int B = 0x2b730c;
+
+        @Override
+        public int color(int index, int length, long timeMillis) {
+            float t = wave(index * 0.08f - timeMillis / 3000f);
+            return 0xFF000000 | lerp(A, B, t);
+        }
+    },
+
+    LEG("~l") {
+        private static final int A = 0xce7e00;
+        private static final int B = 0xfff466;
+
+        @Override
+        public int color(int index, int length, long timeMillis) {
+            float t = wave(index * 0.08f - timeMillis / 3000f);
+            return 0xFF000000 | lerp(A, B, t);
+        }
+    },
+
+    DARKNESS("~d") {
+        private static final int A = 0x444444;
+        private static final int B = 0x1d1c1c;
+
+        @Override
+        public int color(int index, int length, long timeMillis) {
+            float t = wave(index * 0.08f - timeMillis / 3000f);
+            return 0xFF000000 | lerp(A, B, t);
+        }
+    }
+
+    ;
 
     private final String marker;
 

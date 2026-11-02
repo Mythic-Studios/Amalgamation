@@ -1,10 +1,11 @@
-package org.mythic_goose.amalgamation.api.tooltip_v1.wrapping;
+package org.mythic_goose.amalgamation.api.tooltip_v2.wrapping;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import org.mythic_goose.amalgamation.api.tooltip_v2.panel.PanelContext;
 import org.mythic_goose.amalgamation.mixin.accessor.OrderedTextToolTipAccessor;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public class TooltipHelper {
 
     public static void newFix(List<ClientTooltipComponent> components, Font font, int x, int width) {
         shouldFlip = false;
+
+        PanelContext.applyCard(components);
 
         // Widest component that cannot wrap itself
         int forcedWidth = 0;

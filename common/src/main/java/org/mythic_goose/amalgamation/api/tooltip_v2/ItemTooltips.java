@@ -1,7 +1,7 @@
-package org.mythic_goose.amalgamation.api.tooltip_v1;
+package org.mythic_goose.amalgamation.api.tooltip_v2;
 
-import org.mythic_goose.amalgamation.api.tooltip_v1.callback.ItemTooltipCallback;
-import org.mythic_goose.amalgamation.api.tooltip_v1.callback.ItemTooltipPlatform;
+import org.mythic_goose.amalgamation.api.tooltip_v2.callback.ItemTooltipCallback;
+import org.mythic_goose.amalgamation.api.tooltip_v2.callback.ItemTooltipPlatform;
 
 import java.util.ServiceLoader;
 

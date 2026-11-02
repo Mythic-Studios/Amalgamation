@@ -2,5 +2,5 @@
   "itemGroup.amalgamation-testmod.colored_section": "Colored Section",
   "itemGroup.amalgamation-testmod.textured_section": "Textured Section",
 
-  "tooltip.test": "~fCustom Test~n for ~rColors~n. Also there is ~dDark Red~n & ~aPurple across a shade~n. How cool is that"
+  "tooltip.test": "~fCustom Test~n for ~rColors~n. Also there is ~dDark Red~n & ~aPurple across a shade~n. How cool is that. ~pMythic~n, ~lLegendary~n, ~aEpic~n, ~bRare~n, ~uUncommon~n, Common"
 }

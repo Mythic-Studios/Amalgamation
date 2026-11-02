@@ -12,6 +12,7 @@
     "CreativeModeInventoryScreenMixin",
     "FixToolTipMixin",
     "MixinMinecraft",
+    "TooltipBackgroundMixin",
     "accessor.CreativeModeInventoryScreenAccessor",
     "accessor.ItemPickerMenuAccessor",
     "accessor.OrderedTextToolTipAccessor"

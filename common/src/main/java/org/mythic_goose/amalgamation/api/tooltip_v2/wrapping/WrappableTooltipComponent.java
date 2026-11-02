@@ -1,4 +1,4 @@
-package org.mythic_goose.amalgamation.api.tooltip_v1.wrapping;
+package org.mythic_goose.amalgamation.api.tooltip_v2.wrapping;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
