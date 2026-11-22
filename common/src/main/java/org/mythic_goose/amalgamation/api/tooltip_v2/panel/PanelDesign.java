@@ -23,7 +23,7 @@ public record PanelDesign(ColorSource backgroundTop, ColorSource backgroundBotto
         return t -> argb;
     }
 
-    /** Smoothly fades a <-> b over {@code periodMillis}. */
+    /** Smoothly fades a and b over {@code periodMillis}. */
     public static ColorSource pulse(int a, int b, long periodMillis) {
         return t -> {
             float phase = (t % periodMillis) / (float) periodMillis;

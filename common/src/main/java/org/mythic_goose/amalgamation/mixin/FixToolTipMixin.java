@@ -9,6 +9,7 @@ import net.minecraft.resources.Identifier;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2ic;
 import org.jspecify.annotations.Nullable;
+import org.mythic_goose.amalgamation.api.tooltip_v2.panel.PanelContext;
 import org.mythic_goose.amalgamation.api.tooltip_v2.wrapping.TooltipHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,7 +42,10 @@ public abstract class FixToolTipMixin {
             argsOnly = true
     )
     public List<ClientTooltipComponent> makeListMutable(List<ClientTooltipComponent> value) {
-        return new ArrayList<>(value);
+        List<ClientTooltipComponent> copy = new ArrayList<>(value);
+        // If the hovered item has a card layout, this replaces the whole list with the card.
+        PanelContext.applyCard(copy);
+        return copy;
     }
 
     @Inject(
