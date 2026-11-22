@@ -20,6 +20,21 @@ public final class PanelContext {
     private static long capturedAt;
     private static boolean initialised;
     private static boolean loggedFailure;
+    private static long lastBurst;
+    private static long debugUntil;
+
+    /** Temporary diagnostics: opens a 150 ms logging window at most once per second, starting at a capture. */
+    private static void openDebugWindow() {
+        long now = System.nanoTime();
+        if (now - lastBurst < 1_000_000_000L) return;
+        lastBurst = now;
+        debugUntil = now + 150_000_000L;
+    }
+
+    private static void debug(String fmt, Object... args) {
+        if (System.nanoTime() > debugUntil) return;
+        AmalgamationConstants.LOG.info("tooltip_v2 DEBUG " + fmt, args);
+    }
 
     private PanelContext() {}
 
@@ -35,6 +50,8 @@ public final class PanelContext {
         card = null;
 
         if (!(stack.getItem() instanceof CustomPanel panel)) return;
+        openDebugWindow();
+        debug("capture start item={}", stack.getItem());
 
         try {
             // Evaluate the layout once: getLayout() may read stack data and must not be called twice
@@ -47,6 +64,8 @@ public final class PanelContext {
             design = d;
             card = c;
             capturedAt = System.nanoTime();
+            debug("capture done item={} layout={} design={} card={}",
+                    stack.getItem(), layout != null, design != null, card != null);
         } catch (Throwable t) {
             design = null;
             card = null;
@@ -66,6 +85,7 @@ public final class PanelContext {
     /** Background renderer: returns the pending design (or null) and clears it. */
     public static PanelDesign consumeDesign() {
         PanelDesign d = stale() ? null : design;
+        debug("consumeDesign design={} stale={}", design != null, stale());
         design = null;
         return d;
     }
@@ -76,6 +96,7 @@ public final class PanelContext {
      */
     public static void applyCard(List<ClientTooltipComponent> components) {
         TagPanelComponent c = stale() ? null : card;
+        debug("applyCard card={} stale={} listSize={}", card != null, stale(), components.size());
         card = null;
         if (c == null) return;
         components.clear();
